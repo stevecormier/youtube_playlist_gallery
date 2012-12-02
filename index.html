@@ -1,0 +1,151 @@
+
+<!-- saved from url=(0045)http://dl.dropbox.com/u/11899788/youtube.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+		<style type="text/css">
+
+			#playerWrapper{
+				width: 650px;
+				margin-right: auto;
+				margin-left: auto;
+			}
+
+			#thumbGrid{
+				margin-right: auto;
+				margin-left: auto;
+			}
+
+			#thumb {
+				font-size: 8pt;
+				width: 140px;
+				height: 130px;
+				padding: 8px;
+				margin: 15px;
+				overflow: hidden;
+				display: inline-block;
+				cursor: pointer;
+				text-align: center;
+				background-color: #333;
+				
+			}
+
+			#thumb img{
+				vertical-align: middle;
+			}
+
+			#thumb:hover{
+				background-color: #DDDDDD;
+			}
+
+		</style>
+		<script src="./index_files/www-widgetapi-vfl3iLqI8.js" async=""></script><script src="./index_files/iframe_api"></script><script type="text/javascript" src="./index_files/jquery.min.js"></script>
+		<script type="text/javascript">
+
+			//This code loads the IFrame Player API code asynchronously.
+
+			var tag = document.createElement('script');
+      			tag.src = "//www.youtube.com/iframe_api";
+      			var firstScriptTag = document.getElementsByTagName('script')[0];
+      			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+			//			
+
+			var PLAYLIST_ID = "6F45472485FBD025";
+		
+			var player;
+			var playlistIDs = [];
+			var titles = [];
+
+      		function onYouTubeIframeAPIReady() {
+
+      			//create youtube player
+        		player = new YT.Player('player', {
+          			height: '390',
+          			width: '640',
+          			videoId: 'null',
+          			events: {
+            			'onReady': onPlayerReady,
+            			'onStateChange': onPlayerStateChange
+          			}
+        		});
+
+  			}
+
+  			//cue playlist when player is ready
+			function onPlayerReady(event){
+
+				player.cuePlaylist(PLAYLIST_ID);
+
+      		}
+
+      		//once playlist is cued, call to grab the titles of the videos
+      		function onPlayerStateChange(event){
+
+      			if (player.getPlayerState() == 5){
+      				loadTitles();
+				}
+
+      		}
+
+      		//ajax calls to grab the title of each video in the playlist
+      		function loadTitles(){
+				
+				var YTUrl = "https://gdata.youtube.com/feeds/api/videos/"
+				playlistIDs = player.getPlaylist();
+
+				for(var i = 0; i < playlistIDs.length; i++){   
+
+					$.ajax({
+						async: false,
+       					url: YTUrl + playlistIDs[i] + "?v=2&alt=jsonc",
+       					dataType: 'jsonp',
+       					success: function(results){
+       						titles.push(results.data.title);
+
+       						if(i === playlistIDs.length){
+       							loadThumbs();
+       						}
+       					}
+            		});
+
+        		}
+        	}
+
+
+        	//load images and construct thumbnail grid below player
+			function loadThumbs(){
+
+				var listItems = "";
+				var YTUrl = "https://gdata.youtube.com/feeds/api/videos/"
+				playlistIDs = player.getPlaylist();
+
+
+				for(var i = 0; i < playlistIDs.length; i++){
+
+      				var img = "http://img.youtube.com/vi/" + playlistIDs[i] + "/default.jpg";
+
+					listItems += "<li id = 'thumb' onclick = 'selectVid(" + i + ")'><img src = '" + img + "'>" + titles[i] + "</li>";		
+				}
+
+				$("#thumbGrid").html(listItems);
+			}
+
+			//load video when thumbnail is clicked
+			function selectVid(index){
+				player.playVideoAt(index);
+			}
+
+		</script>
+	</head>
+
+	<body>
+
+		<div id="playerWrapper">
+			<iframe frameborder="0" allowfullscreen="" id="player" title="YouTube video player" height="390" width="640" src="./index_files/null.html"></iframe>
+			<div id="thumbs">
+				<ul id="thumbGrid"><li id="thumb" onclick="selectVid(0)"><img src="./index_files/default.jpg">Aubree Marchione and Nick Scott 2010 Performance for Arnold Schwarzenegger</li><li id="thumb" onclick="selectVid(1)"><img src="./index_files/default(1).jpg">Aubree Marchione &amp; Nick Scott Flash Mob Dance for the Push Girls!</li><li id="thumb" onclick="selectVid(2)"><img src="./index_files/default(2).jpg">Nick Scott &amp; Aubree Marchione - 2010 IPC World Wheelchair Dancesport Championships</li><li id="thumb" onclick="selectVid(3)"><img src="./index_files/default(3).jpg">Aubree Marchione &amp; Nick Scott Represent USA at 2010 Paralympics Wheelchair Ballroom Dancing</li><li id="thumb" onclick="selectVid(4)"><img src="./index_files/default(4).jpg">Aubree Marchione and Nick Scott Dancing Samba Wheelchair Ballroom Dancing</li><li id="thumb" onclick="selectVid(5)"><img src="./index_files/default(5).jpg">Nick Scott - 2012 Fox 28 Bodybuilding.com - Arnold Sports Festival</li><li id="thumb" onclick="selectVid(6)"><img src="./index_files/default(6).jpg">Nick Scott &amp; Aubree Marchione - Wheelchair Dancing</li><li id="thumb" onclick="selectVid(7)"><img src="./index_files/default(7).jpg">Aubree Marchione and Nick Scott - News 12 - 2010 Abilities Expo</li><li id="thumb" onclick="selectVid(8)"><img src="./index_files/default(8).jpg">Aubree Marchione and Nick Scott Dancing Rhumba Wheelchair Ballroom Dancing</li><li id="thumb" onclick="selectVid(9)"><img src="./index_files/default(9).jpg">Musical Chairs - Official Movie Trailer 2012 (HD) - Nick Scott &amp; Aubree Marchione</li><li id="thumb" onclick="selectVid(10)"><img src="./index_files/default(10).jpg">Musical Chairs - Official Dance Scene 2012 (HD) - Nick Scott &amp; Aubree Marchione</li></ul>
+			</div>
+		</div>
+
+	
+
+
+</body></html>
