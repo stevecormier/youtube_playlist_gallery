@@ -1,16 +1,15 @@
 //This code loads the IFrame Player API code asynchronously.
-
 var tag = document.createElement('script');
 tag.src = "//www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-//			
+//      
 
 var PLAYLIST_ID = "6F45472485FBD025";
-		
-var player;
+
+var player; 
 var playlistIDs = [];
-var titles = [];
+var vidInfo = [];
 
 function onYouTubeIframeAPIReady() {
 
@@ -34,59 +33,80 @@ function onPlayerReady(event){
 
 }
 
-      		//once playlist is cued, call to grab the titles of the videos
+//once playlist is cued, call to grab the titles of the videos
 function onPlayerStateChange(event){
 
   if (player.getPlayerState() == 5){
     loadTitles();
-	}
+  }
 
 }
-
+ 
 //ajax calls to grab the title of each video in the playlist
 function loadTitles(){
-				
-	var YTUrl = "https://gdata.youtube.com/feeds/api/videos/"
-	playlistIDs = player.getPlaylist();
+        
+  var YTUrl = "https://gdata.youtube.com/feeds/api/videos/"
+  playlistIDs = player.getPlaylist();
 
-	for(var i = 0; i < playlistIDs.length; i++){   
+  for(var i = 0; i < playlistIDs.length; i++){   
 
-		$.ajax({
-			async: false,
+    $.ajax({
       url: YTUrl + playlistIDs[i] + "?v=2&alt=jsonc",
       dataType: 'jsonp',
-       	success: function(results){
-       	  titles.push(results.data.title);
+      async: false,
+      success: function(results){
 
-       		if(i === playlistIDs.length){
-       			loadThumbs();
-       		}
-       	}
+        vidInfo.push({
+          "title" : results.data.title,
+          "thumbnail" : results.data.thumbnail.hqDefault,
+          "id" : results.data.id
+        });
+
+        if(i === playlistIDs.length){
+          loadThumbs();
+        }
+      }
     });
 
   }
+
 }
 
 //load images and construct thumbnail grid below player
 function loadThumbs(){
 
-	var listItems = "";
-	var YTUrl = "https://gdata.youtube.com/feeds/api/videos/"
-	playlistIDs = player.getPlaylist();
+  var listItems = "";
 
+  for(var i = 0; i < playlistIDs.length; i++){
 
-	for(var i = 0; i < playlistIDs.length; i++){
+    var index;
 
-    var img = "http://img.youtube.com/vi/" + playlistIDs[i] + "/default.jpg";
+    for (var j = 0; j < playlistIDs.length; j++) {
 
-		listItems += "<li id = 'thumb' onclick = 'selectVid(" + i + ")'><img src = '" + img + "'>" + titles[i] + "</li>";	
+      if(playlistIDs[i] === vidInfo[j].id){
 
+        index = j;
+
+        j = playlistIDs.length;
+
+      }
+
+    }
+
+    //var index = vidInfo.id.indexOf(playlistIDs[i]);
+
+    istItems += "<li id = 'thumb' onclick = 'selectVid(" + '"' + vidInfo[index].id + '"' + ")'>" + "<img width = '120px' height = '90px' src = '" + vidInfo[index].thumbnail + "'>" + vidInfo[index].title + "</li>";  
+            
   }
 
-	$("#thumbGrid").html(listItems);
+  $("#thumbGrid").html(listItems);
+
 }
 
 //load video when thumbnail is clicked
-function selectVid(index){
-	player.playVideoAt(index);
+function selectVid(id){
+        
+  player.playVideoAt(playlistIDs.indexOf(id));
+
 }
+
