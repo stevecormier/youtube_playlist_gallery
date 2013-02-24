@@ -5,7 +5,7 @@ var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 //      
 
-var PLAYLIST_ID = "6F45472485FBD025";
+var PLAYLIST_ID = "PL6F45472485FBD025";
 
 var player; 
 var playlistIDs = [];
@@ -29,7 +29,7 @@ function onYouTubeIframeAPIReady() {
 //cue playlist when player is ready
 function onPlayerReady(event){
 
-  player.cuePlaylist(PLAYLIST_ID);
+  player.cuePlaylist({list: PLAYLIST_ID});
 
 }
 
